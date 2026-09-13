@@ -283,6 +283,14 @@ let ayarKanal: ReturnType<typeof supabase.channel> | null = null;
 let ayarYuklemeSurecte = false;
 
 async function ayarlariCek(): Promise<AyarVeri> {
+  const on = onIstekAl("ayarlar");
+  if (on) {
+    try {
+      return await on;
+    } catch {
+      /* normal yoldan tekrar denenir */
+    }
+  }
   const { data, error } = await supabase
     .from("ayarlar")
     .select(AYAR_SUTUN)
