@@ -13,7 +13,7 @@ export { GRUPLAR } from "./talebelerTipler";
 export type {
   SayfaKaydi,
   KiraatYonu,
-  Ders,
+  
   Grup,
   Talebe,
   GrupBilgi,
@@ -99,9 +99,6 @@ export async function talebeSil(id: string) {
   return (await veriKatmani()).talebeSil(id);
 }
 
-export async function topluHedefGuncelle(ids: string[], hedef: number) {
-  return (await veriKatmani()).topluHedefGuncelle(ids, hedef);
-}
 
 export async function aidatTutariniOku(): Promise<number> {
   return (await veriKatmani()).aidatTutariniOku();

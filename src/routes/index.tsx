@@ -100,7 +100,7 @@ import {
   type Talebe,
   type SayfaKaydi,
   type KiraatYonu,
-  type Ders,
+  
 } from "@/lib/talebeler";
 import { dosyaFotoDataUrl, bashHarfler } from "@/lib/foto";
 import {
@@ -182,9 +182,6 @@ const SOZLUK = {
     verdi: "Verdi",
     hocaefendi: "Hocaefendi",
     duzenlemeModu: "Düzenleme modu",
-    topluHedef: "Toplu hedef",
-    sfHafta: "sf / hafta",
-    tumuneUygula: "Tümüne uygula",
     buHafta: "Bu hafta",
     gecenHafta: "Geçen hafta",
     gelecekHafta: "Gelecek hafta",
@@ -197,7 +194,7 @@ const SOZLUK = {
     talebe: "Talebe",
     sf: "Sf",
     cuz: "Cüz",
-    hedef: "Hedef",
+    
     islem: "İşlem",
     verilerYukleniyor: "Veriler yükleniyor…",
     baglantiHatasi: "Bağlantı hatası",
@@ -218,8 +215,6 @@ const SOZLUK = {
     cuzKisa: "cüz",
     cuzTam: ". cüz",
     hafizlikIlerlemesi: "Hafızlık İlerlemesi",
-    hedefSf: "Hedef",
-    sfPerHafta: "sf/hafta",
     telefon: "Telefon",
     notlar: "Notlar",
     sinif: "Sınıf",
@@ -229,47 +224,31 @@ const SOZLUK = {
     fotoBuyutGorunum: "Büyütülmüş fotoğraf görünümü.",
     fotoBaslik: "fotoğrafı",
     talebeyiDuzenle: "Talebeyi Düzenle",
-    isimDersIlerleme: "İsim, ders ve Kur'an-ı Kerim ilerlemesi.",
+    isimDersIlerleme: "İsim ve Kur'an-ı Kerim ilerlemesi.",
     isim: "İsim",
     kiraatYonu: "Kıraat yönü",
     alttan: "Alttan (Sayfa 1 → 604)",
     ustten: "Üstten (Sayfa 604 → 1)",
-    hedefHesabiYon: "Hedef hesabı bu yöne göre yapılır.",
+    
     kiraatGunIpucu: "Kıraat günlerini ana tablodaki gün rozetlerinden işaretleyebilirsiniz.",
     sayfaAralik: "Sayfa (1-604)",
     cuzOtomatik: "Cüz (otomatik)",
-    haftalikHedefSayfa: "Haftalık hedef (sayfa)",
-    hedefSifirIpucu: "0 yazarsanız hedef takibi devre dışı kalır.",
     sayfaBosOlamaz: "Sayfa boş olamaz",
     yalnizcaRakam: "Yalnızca rakam giriniz",
     sayfaAralikHata: "Sayfa 1 ile 604 arasında olmalı",
-    hedefBosOlamaz: "Hedef boş olamaz",
-    hedefAralikHata: "Hedef 0 ile 200 arasında olmalı",
     aralikHata: "0 ile 200 arasında olmalı",
     parolayiGoster: "Parolayı göster",
     parolayiGizle: "Parolayı gizle",
     dersVermeyenler: "Ders Vermeyenler",
     talebeIsaretliDegil: "talebe bu gün için işaretli değil.",
     hepsiVerdi: "Bu gün tüm talebeler ders verdi. 🎉",
-    geride: "Geride",
-    hedefte: "Hedefte",
-    yolda: "Yolda",
-    hedefSayfaEtiket: "hedef sayfa",
     enIyiler: "🌟 En çok ders verenler (4+ gün)",
     ortalar: "⚖️ Orta seviye (2-3 gün)",
     zayiflar: "⚠️ Zayıf (0-1 gün)",
     gun7: "/7 gün",
     sayfayiDuzenle: "Sayfayı düzenle",
     digerDil: "አማርኛ",
-    dersKuran: "Kur'an-ı Kerim",
-    dersFikih: "Fıkıh (Sefînetü'n-Necâh)",
-    dersHadis: "Hadis (Erbaîn-i Nevevî)",
     dersKuranKisa: "Kur'an",
-    dersFikihKisa: "Fıkıh",
-    dersHadisKisa: "Hadis",
-    konu: "Konu",
-    hadisNo: "Hadis No",
-    dersSecimi: "Ders",
     haftaGun: ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Pzr"],
     haftaGunUzun: ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"],
   },
@@ -372,14 +351,6 @@ function getKiraatGunler(t: Talebe, haftaBas: number): number[] {
   return Array.isArray(k) ? [...k].sort((a, b) => a - b) : [];
 }
 
-function getDersGunlerMap(t: Talebe, ders: Ders): Record<string, number[]> | undefined {
-  return ders === "kuran" ? t.kiraatGunler : ders === "fikih" ? t.fikihGunler : t.hadisGunler;
-}
-
-function getDersGunler(t: Talebe, ders: Ders, haftaBas: number): number[] {
-  const k = getDersGunlerMap(t, ders)?.[String(haftaBas)];
-  return Array.isArray(k) ? [...k].sort((a, b) => a - b) : [];
-}
 
 function toggleGun(mevcut: number[], gun: number): number[] {
   return mevcut.includes(gun)
@@ -422,7 +393,7 @@ function Index() {
   const [hocaTaslak, setHocaTaslak] = useState(hoca);
   const [seciliHafta, setSeciliHafta] = useState<number>(() => haftaBaslastik());
   const [seciliGun, setSeciliGun] = useState<number>(() => bugununGunu());
-  const seciliDers: Ders = "kuran";
+  
 
   const [menuAcik, setMenuAcik] = useState(false);
   const [ayarlarAcik, setAyarlarAcik] = useState(false);
@@ -625,20 +596,6 @@ function Index() {
     });
   };
 
-  const dersGunToggle = (t: Talebe, ders: Ders, gun: number) => {
-    if (ders === "kuran") {
-      kiraatGunToggle(t, gun);
-      return;
-    }
-    const key = String(seciliHafta);
-    const map = getDersGunlerMap(t, ders) ?? {};
-    const mevcut = Array.isArray(map[key]) ? map[key] : [];
-    const yeni = toggleGun(mevcut, gun);
-    const harita = { ...map, [key]: yeni };
-    const patch: Partial<Talebe> =
-      ders === "fikih" ? { fikihGunler: harita } : { hadisGunler: harita };
-    void talebeGuncelle(t.id, patch);
-  };
 
   const ekle = (sadeceAidat = false) => {
     // Boş formu aç; kaydet ancak tüm bilgiler doldurulunca yapılır.
@@ -657,8 +614,6 @@ function Index() {
       gecmis: [{ t: Date.now(), sayfa: 1 }],
       sira: enBuyukSira + 1,
       yon: "alttan",
-      fikihKonu: 1,
-      hadisNo: 1,
     aidatSadece: yeniTalebeAcik === "aidat",
       aidatHaric: yeniTalebeAcik !== "aidat",
     };
@@ -691,18 +646,13 @@ function Index() {
     };
   };
 
-  const haftalikToplam = useMemo(
-    () => hafizTalebeler.reduce((acc, t) => acc + ilerleme(t, seciliHafta, haftaSonu), 0),
-    [hafizTalebeler, seciliHafta, haftaSonu],
-  );
-
   const ozet = useMemo(() => {
     const toplam = hafizTalebeler.length;
     const kiraatSayi = hafizTalebeler.filter((t) =>
-      getDersGunler(t, seciliDers, seciliHafta).includes(seciliGun),
+      getKiraatGunler(t, seciliHafta).includes(seciliGun),
     ).length;
     return { toplam, kiraatSayi };
-  }, [hafizTalebeler, seciliHafta, seciliGun, seciliDers]);
+  }, [hafizTalebeler, seciliHafta, seciliGun]);
 
   const girisYap = () => {
     if (parolaTaslak === mevcutParola()) {
@@ -1032,8 +982,6 @@ function Index() {
             gecmis: [{ t: Date.now(), sayfa: 1 }],
             sira: enBuyukSira,
             yon: "alttan",
-            fikihKonu: 1,
-            hadisNo: 1,
             aidatSadece: true,
             aidatHaric: false,
             ...patch,
@@ -1401,7 +1349,7 @@ function Index() {
               <div className="mb-3 grid grid-cols-2 gap-3">
                 <OzetKart etiket={tr("toplamTalebe")} deger={ozet.toplam} />
                 <OzetKart
-                  etiket={`${tr(seciliDers === "kuran" ? "dersKuranKisa" : seciliDers === "fikih" ? "dersFikihKisa" : "dersHadisKisa")} (${tr("haftaGun")[seciliGun]})`}
+                  etiket={`${tr("dersKuranKisa")} (${tr("haftaGun")[seciliGun]})`}
                   deger={`${ozet.kiraatSayi}/${ozet.toplam}`}
                   onClick={() => setVermediAcik(true)}
                 />
@@ -1526,9 +1474,9 @@ function Index() {
                           </TableCell>
                           <TableCell className="px-0.5 py-2 text-center sm:px-4 sm:py-3">
                             <GunDurum
-                              verdi={getDersGunler(t, seciliDers, seciliHafta).includes(seciliGun)}
+                              verdi={getKiraatGunler(t, seciliHafta).includes(seciliGun)}
                               duzenlenebilir={hocaModu}
-                              onToggle={() => dersGunToggle(t, seciliDers, seciliGun)}
+                              onToggle={() => kiraatGunToggle(t, seciliGun)}
                             />
                           </TableCell>
                           <TableCell className="px-0.5 py-2 text-center text-[11px] font-medium tabular-nums sm:px-4 sm:py-3 sm:text-base">
@@ -1608,7 +1556,7 @@ function Index() {
           onClose={() => setVermediAcik(false)}
           gunAdi={tr("haftaGun")[seciliGun]}
           talebeler={hafizTalebeler.filter(
-            (t) => !getDersGunler(t, seciliDers, seciliHafta).includes(seciliGun),
+            (t) => !getKiraatGunler(t, seciliHafta).includes(seciliGun),
           )}
           onTalebe={(t) => {
             setVermediAcik(false);
@@ -3091,31 +3039,6 @@ function DuzenleDiyalog({
   );
 }
 
-function DersKutu({
-  etiket,
-  verildi,
-  onChange,
-}: {
-  etiket: string;
-  verildi: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <label
-      className={`flex cursor-pointer items-center justify-between rounded-md border px-3 py-2.5 transition-colors ${
-        verildi ? "border-primary/40 bg-primary/5" : "border-border bg-card hover:bg-muted/50"
-      }`}
-    >
-      <span className="text-sm font-medium text-foreground">{etiket}</span>
-      <div className="flex items-center gap-2">
-        <span className={`text-xs ${verildi ? "text-primary" : "text-muted-foreground"}`}>
-          {verildi ? "Verdi" : "Vermedi"}
-        </span>
-        <Checkbox checked={verildi} onCheckedChange={(v) => onChange(Boolean(v))} />
-      </div>
-    </label>
-  );
-}
 
 function ParolaInput({
   value,

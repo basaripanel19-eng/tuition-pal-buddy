@@ -5,7 +5,7 @@ export type SayfaKaydi = { t: number; sayfa: number };
 
 export type KiraatYonu = "alttan" | "ustten";
 
-export type Ders = "kuran" | "fikih" | "hadis";
+
 
 export type Grup = string;
 
@@ -21,7 +21,7 @@ export type Talebe = {
   kiraat: boolean;
   kiraatGunler?: Record<string, number[]>;
   sayfa: number;
-  hedefHaftalik?: number;
+  
   gecmis: SayfaKaydi[];
   sira?: number;
   fotoUrl?: string;
@@ -29,10 +29,6 @@ export type Talebe = {
   dogum?: string;
   notlar?: string;
   yon?: KiraatYonu;
-  fikihKonu?: number;
-  fikihGunler?: Record<string, number[]>;
-  hadisNo?: number;
-  hadisGunler?: Record<string, number[]>;
   aidat?: Record<string, boolean>;
   grup?: Grup;
   sinif?: string;
