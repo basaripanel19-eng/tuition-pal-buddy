@@ -21,13 +21,9 @@ import {
 const SAYFA_BOYU = 1000;
 
 // Yalnızca gereken sütunlar (SELECT * kullanılmaz).
-const TALEBE_SUTUN =
-  "id,isim,grup,sinif,telefon,dogum,notlar,foto_url,kiraat,yon,sayfa,sira,aidat_sadece,aidat_haric,kiraat_gunler,gecmis,aidat";
-
-const AYAR_SUTUN =
-  "aidat_tutar,grup_liste,hoca_mailler,ekstra_hocalar,aidat_mail_gonderim,gonderen_eposta,gonderen_ad";
-
-const AYAR_ID = "genel";
+export { TALEBE_SUTUN, AYAR_SUTUN, AYAR_ID } from "./talebeSutunlar";
+import { TALEBE_SUTUN, AYAR_SUTUN, AYAR_ID } from "./talebeSutunlar";
+import { onIstekAl } from "./onIstek";
 
 type Satir = Record<string, unknown>;
 
