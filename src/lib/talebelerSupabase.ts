@@ -127,7 +127,20 @@ function hataYay(e: unknown) {
 /** Tüm talebeleri 1000'erlik sayfalarla çeker. */
 async function talebeleriCek(): Promise<Talebe[]> {
   const hepsi: Talebe[] = [];
-  for (let bas = 0; ; bas += SAYFA_BOYU) {
+
+  // Açılışta başlatılan ön istek varsa onun sonucunu kullan (ek tur yok).
+  const on = onIstekAl("talebeler");
+  if (on) {
+    try {
+      const parca = await on;
+      hepsi.push(...parca.map(satirdanTalebe));
+      if (parca.length < SAYFA_BOYU) return talebeleriTrSirala(hepsi);
+    } catch {
+      hepsi.length = 0;
+    }
+  }
+
+  for (let bas = hepsi.length; ; bas += SAYFA_BOYU) {
     const { data, error } = await supabase
       .from("talebeler")
       .select(TALEBE_SUTUN)
