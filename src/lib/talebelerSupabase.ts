@@ -22,7 +22,7 @@ const SAYFA_BOYU = 1000;
 
 // Yalnızca gereken sütunlar (SELECT * kullanılmaz).
 const TALEBE_SUTUN =
-  "id,isim,grup,sinif,telefon,dogum,notlar,foto_url,kiraat,yon,sayfa,hedef_haftalik,fikih_konu,hadis_no,sira,aidat_sadece,aidat_haric,kiraat_gunler,fikih_gunler,hadis_gunler,gecmis,aidat";
+  "id,isim,grup,sinif,telefon,dogum,notlar,foto_url,kiraat,yon,sayfa,sira,aidat_sadece,aidat_haric,kiraat_gunler,gecmis,aidat";
 
 const AYAR_SUTUN =
   "aidat_tutar,grup_liste,hoca_mailler,ekstra_hocalar,aidat_mail_gonderim,gonderen_eposta,gonderen_ad";
@@ -54,7 +54,7 @@ function satirdanTalebe(r: Satir): Talebe {
     kiraat: r["kiraat"] === true,
     kiraatGunler: harita(r["kiraat_gunler"]),
     sayfa: sayi(r["sayfa"], 1),
-    hedefHaftalik: sayi(r["hedef_haftalik"], 5),
+    
     gecmis: Array.isArray(r["gecmis"]) ? (r["gecmis"] as SayfaKaydi[]) : [],
     sira: sayi(r["sira"], 0),
     fotoUrl: metin(r["foto_url"]),
@@ -62,10 +62,6 @@ function satirdanTalebe(r: Satir): Talebe {
     dogum: metin(r["dogum"]),
     notlar: metin(r["notlar"]),
     yon: r["yon"] === "ustten" ? "ustten" : "alttan",
-    fikihKonu: sayi(r["fikih_konu"], 1),
-    fikihGunler: harita(r["fikih_gunler"]),
-    hadisNo: sayi(r["hadis_no"], 1),
-    hadisGunler: harita(r["hadis_gunler"]),
     aidat:
       r["aidat"] && typeof r["aidat"] === "object"
         ? (r["aidat"] as Record<string, boolean>)
@@ -93,15 +89,10 @@ function talebedenSatir(t: Partial<Omit<Talebe, "id">>): Satir {
   ek("kiraat", t.kiraat);
   ek("yon", t.yon);
   ek("sayfa", t.sayfa);
-  ek("hedef_haftalik", t.hedefHaftalik);
-  ek("fikih_konu", t.fikihKonu);
-  ek("hadis_no", t.hadisNo);
   ek("sira", t.sira);
   ek("aidat_sadece", t.aidatSadece);
   ek("aidat_haric", t.aidatHaric);
   ek("kiraat_gunler", t.kiraatGunler);
-  ek("fikih_gunler", t.fikihGunler);
-  ek("hadis_gunler", t.hadisGunler);
   ek("gecmis", t.gecmis);
   ek("aidat", t.aidat);
   if ("sinif" in t) s["sinif"] = t.sinif ?? null;
@@ -267,19 +258,6 @@ export async function talebeSil(id: string) {
   if (error) throw error;
 }
 
-export async function topluHedefGuncelle(ids: string[], hedef: number) {
-  if (ids.length === 0) return;
-  const kume = new Set(ids);
-  talebeleriYerelUygula((mevcut) =>
-    mevcut.map((t) => (kume.has(t.id) ? { ...t, hedefHaftalik: hedef } : t)),
-  );
-  // Tek sorguda toplu güncelleme (N+1 yok).
-  const { error } = await supabase
-    .from("talebeler")
-    .update({ hedef_haftalik: hedef } as never)
-    .in("id", ids);
-  if (error) throw error;
-}
 
 export async function aidatOdemeAyarla(t: Talebe, ayKey: string, odendi: boolean) {
   const harita = { ...(t.aidat ?? {}), [ayKey]: odendi };
