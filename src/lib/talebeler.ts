@@ -35,6 +35,9 @@ function veriKatmani(): Promise<FirestoreModul> {
   return modul;
 }
 
+// Veri katmanı parçası da hemen indirilmeye başlar (ilk çizimi bloklamaz).
+if (typeof window !== "undefined") void veriKatmani();
+
 /** Dinleyicileri tembel bağlar: önbellek anında, canlı veri hemen ardından. */
 function tembelDinle<T extends unknown[]>(
   bagla: (m: FirestoreModul) => (...a: T) => () => void,
