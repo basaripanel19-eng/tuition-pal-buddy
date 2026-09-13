@@ -7,7 +7,12 @@
 // üzerine yazılır.
 
 import { cacheOku, CACHE } from "./yerelCache";
+import { onIstekBaslat } from "./onIstek";
+import { TALEBE_SUTUN, AYAR_SUTUN, AYAR_ID } from "./talebeSutunlar";
 import type { GrupBilgi, HocaMailAyar, Talebe, EkstraHoca } from "./talebelerTipler";
+
+// Veri isteği ekran çizilmeden başlar; sonuç veri katmanında kullanılır.
+onIstekBaslat(TALEBE_SUTUN, AYAR_SUTUN, AYAR_ID);
 
 export { GRUPLAR } from "./talebelerTipler";
 export type {
@@ -29,6 +34,9 @@ function veriKatmani(): Promise<FirestoreModul> {
   modul ??= import("./talebelerSupabase");
   return modul;
 }
+
+// Veri katmanı parçası da hemen indirilmeye başlar (ilk çizimi bloklamaz).
+if (typeof window !== "undefined") void veriKatmani();
 
 /** Dinleyicileri tembel bağlar: önbellek anında, canlı veri hemen ardından. */
 function tembelDinle<T extends unknown[]>(

@@ -94,6 +94,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      // Veri sunucusuna bağlantı önceden kurulur (ilk istek daha hızlı başlar).
+      { rel: "preconnect", href: "https://oqszcvjbgsihwdhvmpgy.supabase.co", crossOrigin: "" },
+      { rel: "dns-prefetch", href: "https://oqszcvjbgsihwdhvmpgy.supabase.co" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/icon-192.png" },
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },

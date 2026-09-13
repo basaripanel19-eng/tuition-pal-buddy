@@ -21,13 +21,9 @@ import {
 const SAYFA_BOYU = 1000;
 
 // Yalnızca gereken sütunlar (SELECT * kullanılmaz).
-const TALEBE_SUTUN =
-  "id,isim,grup,sinif,telefon,dogum,notlar,foto_url,kiraat,yon,sayfa,sira,aidat_sadece,aidat_haric,kiraat_gunler,gecmis,aidat";
-
-const AYAR_SUTUN =
-  "aidat_tutar,grup_liste,hoca_mailler,ekstra_hocalar,aidat_mail_gonderim,gonderen_eposta,gonderen_ad";
-
-const AYAR_ID = "genel";
+export { TALEBE_SUTUN, AYAR_SUTUN, AYAR_ID } from "./talebeSutunlar";
+import { TALEBE_SUTUN, AYAR_SUTUN, AYAR_ID } from "./talebeSutunlar";
+import { onIstekAl } from "./onIstek";
 
 type Satir = Record<string, unknown>;
 
@@ -131,7 +127,20 @@ function hataYay(e: unknown) {
 /** Tüm talebeleri 1000'erlik sayfalarla çeker. */
 async function talebeleriCek(): Promise<Talebe[]> {
   const hepsi: Talebe[] = [];
-  for (let bas = 0; ; bas += SAYFA_BOYU) {
+
+  // Açılışta başlatılan ön istek varsa onun sonucunu kullan (ek tur yok).
+  const on = onIstekAl("talebeler");
+  if (on) {
+    try {
+      const parca = await on;
+      hepsi.push(...parca.map(satirdanTalebe));
+      if (parca.length < SAYFA_BOYU) return talebeleriTrSirala(hepsi);
+    } catch {
+      hepsi.length = 0;
+    }
+  }
+
+  for (let bas = hepsi.length; ; bas += SAYFA_BOYU) {
     const { data, error } = await supabase
       .from("talebeler")
       .select(TALEBE_SUTUN)
@@ -274,6 +283,14 @@ let ayarKanal: ReturnType<typeof supabase.channel> | null = null;
 let ayarYuklemeSurecte = false;
 
 async function ayarlariCek(): Promise<AyarVeri> {
+  const on = onIstekAl("ayarlar");
+  if (on) {
+    try {
+      return await on;
+    } catch {
+      /* normal yoldan tekrar denenir */
+    }
+  }
   const { data, error } = await supabase
     .from("ayarlar")
     .select(AYAR_SUTUN)
