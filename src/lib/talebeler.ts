@@ -7,7 +7,12 @@
 // üzerine yazılır.
 
 import { cacheOku, CACHE } from "./yerelCache";
+import { onIstekBaslat } from "./onIstek";
+import { TALEBE_SUTUN, AYAR_SUTUN, AYAR_ID } from "./talebeSutunlar";
 import type { GrupBilgi, HocaMailAyar, Talebe, EkstraHoca } from "./talebelerTipler";
+
+// Veri isteği ekran çizilmeden başlar; sonuç veri katmanında kullanılır.
+onIstekBaslat(TALEBE_SUTUN, AYAR_SUTUN, AYAR_ID);
 
 export { GRUPLAR } from "./talebelerTipler";
 export type {
