@@ -2612,7 +2612,7 @@ function ProfilDiyalog({
               )}
 
 
-              {detayliAlanlar && (
+              {(detayliAlanlar || kiraatGizli) && (
                 <>
                   <div className="space-y-1.5">
                     <Label className="flex items-center gap-1.5 text-sm">
@@ -2665,7 +2665,7 @@ function ProfilDiyalog({
                   onClick={() => {
                     onNotKaydet(
                       talebe,
-                      detayliAlanlar
+                      detayliAlanlar || kiraatGizli
                         ? {
                             telefon: telefon.trim(),
                             sinif: sinif.trim(),
