@@ -2112,11 +2112,16 @@ function Index() {
                         value={t.grup ?? ""}
                         onChange={(e) => {
                           const yeni = e.target.value as Grup | "";
-                          void talebeGuncelle(t.id, { grup: yeni });
+                          void talebeGuncelle(t.id, { grup: yeni || undefined }).catch(() =>
+                            toast.error(`${t.isim}: grup kaydedilemedi, tekrar deneyin.`),
+                          );
                         }}
                         className="h-9 shrink-0 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:border-primary"
                       >
                         <option value="">Grup yok</option>
+                        {t.grup && !gruplar.some((g) => g.id === t.grup) && (
+                          <option value={t.grup}>Yükleniyor…</option>
+                        )}
                         {gruplar.map((g) => (
                           <option key={g.id} value={g.id}>
                             {g.ad}

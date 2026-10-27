@@ -112,7 +112,20 @@ const talebeHataAbone = new Set<(e: Error) => void>();
 let talebeKanal: ReturnType<typeof supabase.channel> | null = null;
 let ilkYuklemeSurecte = false;
 
-function talebeYay(liste: Talebe[]) {
+// Sunucuya henüz işlenmemiş yerel değişiklikler: geç gelen eski veri
+// (ilk yükleme ya da canlı kanal yankısı) bunları ezmesin.
+const bekleyen = new Map<string, { patch: Partial<Talebe>; sayac: number }>();
+
+function bekleyenUygula(liste: Talebe[]): Talebe[] {
+  if (bekleyen.size === 0) return liste;
+  return liste.map((t) => {
+    const b = bekleyen.get(t.id);
+    return b ? { ...t, ...b.patch } : t;
+  });
+}
+
+function talebeYay(liste0: Talebe[]) {
+  const liste = bekleyenUygula(liste0);
   talebeSon = liste;
   cacheYaz(CACHE.talebeler, liste);
   talebeAbone.forEach((f) => f(liste));
@@ -251,14 +264,32 @@ export async function talebeEkle(t: Omit<Talebe, "id">) {
 }
 
 export async function talebeGuncelle(id: string, patch: Partial<Omit<Talebe, "id">>) {
+  const onceki = bekleyen.get(id);
+  const kayit = { patch: { ...(onceki?.patch ?? {}), ...patch }, sayac: (onceki?.sayac ?? 0) + 1 };
+  bekleyen.set(id, kayit);
   talebeleriYerelUygula((mevcut) =>
     talebeleriTrSirala(mevcut.map((t) => (t.id === id ? { ...t, ...patch } : t))),
   );
-  const { error } = await supabase
-    .from("talebeler")
-    .update(talebedenSatir(patch) as never)
-    .eq("id", id);
-  if (error) throw error;
+  let sonHata: unknown = null;
+  for (let deneme = 0; deneme < 3; deneme++) {
+    const { error } = await supabase
+      .from("talebeler")
+      .update(talebedenSatir(patch) as never)
+      .eq("id", id);
+    sonHata = error;
+    if (!error) break;
+    await new Promise((r) => setTimeout(r, 400 * (deneme + 1)));
+  }
+  const b = bekleyen.get(id);
+  if (b) {
+    b.sayac -= 1;
+    if (b.sayac <= 0) bekleyen.delete(id);
+  }
+  if (sonHata) {
+    // Kayıt başarısız: sunucudaki gerçek durumu geri getir.
+    void talebeleriTazele();
+    throw sonHata;
+  }
 }
 
 export async function talebeSil(id: string) {
@@ -433,6 +464,7 @@ export async function aidatMailGonderimIsaretle(
 // ---- Grup adları ve mesul hocalar ----
 
 function grupListeCoz(v: AyarVeri): GrupBilgi[] {
+  if (!v) return gruplarCacheOku() ?? GRUPLAR.map((g) => ({ ...g }));
   const liste = v?.["grup_liste"];
   if (Array.isArray(liste) && liste.length > 0) {
     return liste
